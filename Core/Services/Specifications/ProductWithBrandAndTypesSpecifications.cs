@@ -14,7 +14,12 @@ namespace Services.Specifications
             ApplyIncludes();
         }
 
-        public ProductWithBrandAndTypesSpecifications() : base(null)
+        public ProductWithBrandAndTypesSpecifications(int? brandId,int? typeId) 
+            : base(
+                    P => 
+                    (!brandId.HasValue || P.ProductBrand.Id == brandId) &&
+                    (!typeId.HasValue || P.ProductType.Id == typeId)
+                  )
         {
             ApplyIncludes();
         }
