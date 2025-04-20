@@ -15,10 +15,11 @@ namespace Presentation
     {
         // endpoint: public non-static method
 
+        // sort : nameAsc [default] - nameDesc - priceDesc - priceAsc
         [HttpGet] // Get: /api/products
-        public async Task<IActionResult> GetAllProducts(int? brandId, int? typeId)
+        public async Task<IActionResult> GetAllProducts(int? brandId, int? typeId, string? sort)
         {
-            var result = await servicesManager.ProductService.GetAllProductsAsync(brandId, typeId);
+            var result = await servicesManager.ProductService.GetAllProductsAsync(brandId, typeId, sort);
             if (result is null) return BadRequest(); // 400
             return Ok(result); // 200
         }

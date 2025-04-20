@@ -14,7 +14,7 @@ namespace Services.Specifications
             ApplyIncludes();
         }
 
-        public ProductWithBrandAndTypesSpecifications(int? brandId,int? typeId) 
+        public ProductWithBrandAndTypesSpecifications(int? brandId,int? typeId, string? sort) 
             : base(
                     P => 
                     (!brandId.HasValue || P.ProductBrand.Id == brandId) &&
@@ -22,12 +22,39 @@ namespace Services.Specifications
                   )
         {
             ApplyIncludes();
+
+            ApplySorting(sort);
         }
 
         private void ApplyIncludes()
         {
             AddInclude(P => P.ProductBrand);
             AddInclude(P => P.ProductType);
+        }
+        private void ApplySorting(string? sort)
+        {
+            if (!string.IsNullOrEmpty(sort))
+            {
+                switch (sort.ToLower())
+                {
+                    case "namedesc":
+                        AddOrderByDescending(P => P.Name);
+                        break;
+                    case "priceasc":
+                        AddOrderBy(P => P.Price);
+                        break;
+                    case "pricedsc":
+                        AddOrderByDescending(P => P.Price);
+                        break;
+                    default:
+                        AddOrderBy(P => P.Name);
+                        break;
+                }
+            }
+            else
+            {
+                AddOrderBy(P => P.Name);
+            }
         }
     }
 }
