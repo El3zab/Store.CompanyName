@@ -1,0 +1,28 @@
+﻿using Domain.Contracts;
+using Domain.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Services.Specifications
+{
+    public class BaseSpecifications<TEnity, TKey> : ISpecifications<TEnity, TKey>
+        where TEnity : BaseEntity<TKey>
+    {
+        public Expression<Func<TEnity, bool>>? Criteria { get ; set ; }
+        public List<Expression<Func<TEnity, object>>> IncludeExpression { get; set; } = new List<Expression<Func<TEnity, object>>>();
+
+        public BaseSpecifications(Expression<Func<TEnity, bool>>? expression)
+        {
+            Criteria = expression;
+        }
+
+        protected void AddInclude(Expression<Func<TEnity, object>> expression)
+        {
+            IncludeExpression.Add(expression);
+        }
+    }
+}
