@@ -14,7 +14,7 @@ namespace Services.Specifications
             ApplyIncludes();
         }
 
-        public ProductWithBrandAndTypesSpecifications(int? brandId,int? typeId, string? sort) 
+        public ProductWithBrandAndTypesSpecifications(int? brandId,int? typeId, string? sort, int pageIndex, int pageSize) 
             : base(
                     P => 
                     (!brandId.HasValue || P.ProductBrand.Id == brandId) &&
@@ -22,8 +22,8 @@ namespace Services.Specifications
                   )
         {
             ApplyIncludes();
-
             ApplySorting(sort);
+            ApplyPagination(pageIndex, pageSize);
         }
 
         private void ApplyIncludes()
@@ -43,7 +43,7 @@ namespace Services.Specifications
                     case "priceasc":
                         AddOrderBy(P => P.Price);
                         break;
-                    case "pricedsc":
+                    case "pricedesc":
                         AddOrderByDescending(P => P.Price);
                         break;
                     default:
