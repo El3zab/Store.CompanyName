@@ -14,16 +14,20 @@ namespace Services
 {
     public class ProductService(IUnitOfWork unitOfWork, IMapper mapper) : IProductService
     {
-        public async Task<IEnumerable<ProductResultDto>> GetAllProductsAsync(int? brandId, int? typeId, string? sort, int pageIndex = 1, int pageSize = 1)
+        public async Task<PaginationResponse<ProductResultDto>> GetAllProductsAsync(ProductSpecificationParameters specParames)
         {
-            var spec = new ProductWithBrandAndTypesSpecifications(brandId, typeId, sort, pageIndex, pageSize);
+            var spec = new ProductWithBrandAndTypesSpecifications(specParames);
 
             // Get All Products Throught ProductRepository
             var products = await unitOfWork.GetRepository<Product, int>().GetAllAsync(spec);
 
+            var specCount = new ProductWithCountSpecifications(specParames);
+
+            var count = await unitOfWork.GetRepository<Product, int>().CountAync(specCount);
+            
             // Mapping IEnumerable<Product> To IEnumerable<ProductResultDto> : Automapper
             var result = mapper.Map<IEnumerable<ProductResultDto>>(products);
-            return result;
+            return new PaginationResponse<ProductResultDto>(specParames.PageIndex,specParames.PageSize,count,result);
         }
 
         public async Task<ProductResultDto?> GetProductByIdAsync(int id)
