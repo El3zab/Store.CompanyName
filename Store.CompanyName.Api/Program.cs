@@ -7,6 +7,7 @@ using Persistence;
 using Persistence.Data;
 using Services;
 using Services.Abstraction;
+using Store.CompanyName.Api.Middlewares;
 using System.Threading.Tasks;
 
 using AssemblyMapping = Services.AssemblyReference;
@@ -44,6 +45,8 @@ namespace Store.CompanyName.Api
             await dbInitializer.InitializeAsync();
 
             #endregion
+
+            app.UseMiddleware<GlobalErrorHandlingMiddleware>();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
