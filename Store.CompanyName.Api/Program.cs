@@ -1,5 +1,7 @@
 
 using Domain.Contracts;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,6 +9,7 @@ using Persistence;
 using Persistence.Data;
 using Services;
 using Services.Abstraction;
+using Shared.ErrorModels;
 using Store.CompanyName.Api.Middlewares;
 using System.Threading.Tasks;
 
@@ -36,6 +39,27 @@ namespace Store.CompanyName.Api
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IServicesManager, ServicesManager>();
             builder.Services.AddAutoMapper(typeof(AssemblyMapping).Assembly);
+
+            builder.Services.Configure<ApiBehaviorOptions > (config =>
+            {
+                config.InvalidModelStateResponseFactory = (actionContext) =>
+                {
+                    var errors = actionContext.ModelState.Where(m => m.Value.Errors.Any())
+                                 .Select(m => new ValidationError()
+                                 {
+                                     Field = m.Key,
+                                     Errors = m.Value.Errors.Select(errors => errors.ErrorMessage)
+                                 });
+
+                    var responase = new ValidationErrorResponse()
+                    {
+                        Errors = errors
+                    };
+
+                    return new BadRequestObjectResult(responase);
+                };
+            });
+
 
             var app = builder.Build();
 
