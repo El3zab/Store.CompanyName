@@ -1,6 +1,9 @@
 ﻿using Domain.Contracts;
+using Domain.Models.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Persistence;
+using Persistence.Identity;
 using Services;
 using Shared.ErrorModels;
 using Store.CompanyName.Api.Middlewares;
@@ -13,13 +16,12 @@ namespace Store.CompanyName.Api.Extensions
         public static IServiceCollection RegisterAllServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddBuiltInServices();
-
             services.AddSwaggerServices();
+            services.ConfigureServices();
 
             services.AddInfrastructureServices(configuration);
+            services.AddBuiltIdentityServices();
             services.AddApplicationServices();
-
-            services.ConfigureServices();
 
             return services;
         }
@@ -30,6 +32,13 @@ namespace Store.CompanyName.Api.Extensions
             services.AddControllers();
 
             
+            return services;
+        }
+        private static IServiceCollection AddBuiltIdentityServices(this IServiceCollection services)
+        {
+            services.AddIdentity<AppUser, IdentityRole>()
+                    .AddEntityFrameworkStores<StoreIdentityDbContext>();
+
             return services;
         }
         private static IServiceCollection AddSwaggerServices(this IServiceCollection services)
@@ -99,7 +108,7 @@ namespace Store.CompanyName.Api.Extensions
             using var scope = app.Services.CreateScope();
             var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>(); // ASK CLR Create Object From DbInitializer
             await dbInitializer.InitializeAsync();
-
+            await dbInitializer.InitializeIdentityAsync();
             
             return app;
         }
