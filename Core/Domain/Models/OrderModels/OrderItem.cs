@@ -6,14 +6,14 @@
         {
             
         }
-        public OrderItem(ProductInOrderItem myProperty, int quntity, decimal price)
+        public OrderItem(ProductInOrderItem product, int quntity, decimal price)
         {
-            MyProperty = myProperty;
+            Product = product;
             Quntity = quntity;
             Price = price;
         }
 
-        public ProductInOrderItem MyProperty { get; set; }
+        public ProductInOrderItem Product { get; set; }
         public int Quntity { get; set; }
         public decimal Price { get; set; }
     }
