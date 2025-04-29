@@ -17,7 +17,7 @@ namespace Domain.Models.OrderModels
             Id = Guid.NewGuid();
             UserEmail = userEmail;
             ShippingAddress = shippingAddress;
-            OrderItem = orderItem;
+            OrderItems = orderItem;
             DeliveryMethod = deliveryMethod;
             SubTotal = subTotal;
             PaymentIntentId = paymentIntentId;
@@ -31,7 +31,7 @@ namespace Domain.Models.OrderModels
         public Address ShippingAddress { get; set; }
 
         // Order Items
-        public ICollection<OrderItem> OrderItem { get; set; } = new List<OrderItem>(); // Navigational Property
+        public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>(); // Navigational Property
 
         // Delivery Method
         public DeliveryMethod DeliveryMethod { get; set; } // Navigational Property
