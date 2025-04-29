@@ -5,13 +5,18 @@ using Services.Abstraction;
 using Shared;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace Services
 {
-    public class AuthService(UserManager<AppUser> userManager) : IAuthService
+    public class AuthService(UserManager<AppUser> userManager, IOptions<JwtOptions> options) : IAuthService
     {
         public async Task<UserResultDto> LoginAsync(LoginDto loginDto)
         {
@@ -25,12 +30,14 @@ namespace Services
             {
                 DisplayName = user.DisplayName,
                 Email = user.Email,
-                Token = "TOKEN"
+                Token = await GenerateJwtTokenAsync(user)
             };
         }
 
         public async Task<UserResultDto> RegisterAsync(RegisterDto registerDto)
         {
+            // TODO : Validate Duplicated Email
+            
             var user = new AppUser()
             {
                 DisplayName = registerDto.DisplayName,
@@ -50,8 +57,45 @@ namespace Services
             {
                 DisplayName = user.DisplayName,
                 Email = user.Email,
-                Token = "TOKEN"
+                Token = await GenerateJwtTokenAsync(user)
             };
+        }
+
+        // JWT : Json Web Token [Used With Authorization & Information Exchange]
+        //     : Structured [Header.Payload.Signature]
+        //     : Header    => [Type Of Token & Signing Alogrithm(ex.RSA | HMAC)]
+        //     : PayLoad   => [Contains Claims(User-Data)]
+        //                    [Types: Registered(Mandatory) | Public(Defined When Using) | Private(Custom)]
+        //     : Signature => [Contains Encrypted Hearder | Encrypted PayLoad | Secret Key]
+        private async Task<string> GenerateJwtTokenAsync(AppUser user)
+        {
+            var jwtOptions = options.Value;
+
+            var authClaim = new List<Claim>()
+            {
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Email, user.Email),
+            };
+
+            var roles = await userManager.GetRolesAsync(user);
+            foreach (var role in roles)
+            {
+                authClaim.Add(new Claim(ClaimTypes.Role, role));
+            }
+
+            var SecretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey));
+
+            var token = new JwtSecurityToken(
+                issuer: jwtOptions.Issuer,
+                audience: jwtOptions.Audience,
+                claims: authClaim,
+                expires: DateTime.UtcNow.AddDays(jwtOptions.DurationInDays),
+                signingCredentials: new SigningCredentials(SecretKey, SecurityAlgorithms.HmacSha256Signature)
+                );
+
+            // TOKEN
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }
