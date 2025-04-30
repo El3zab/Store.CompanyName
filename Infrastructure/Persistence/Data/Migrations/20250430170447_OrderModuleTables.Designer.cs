@@ -12,7 +12,7 @@ using Persistence.Data;
 namespace Persistence.Data.Migrations
 {
     [DbContext(typeof(StoreDbContext))]
-    [Migration("20250429204639_OrderModuleTables")]
+    [Migration("20250430170447_OrderModuleTables")]
     partial class OrderModuleTables
     {
         /// <inheritdoc />
@@ -201,7 +201,7 @@ namespace Persistence.Data.Migrations
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.Property<string>("FristName")
+                            b1.Property<string>("FirstName")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 

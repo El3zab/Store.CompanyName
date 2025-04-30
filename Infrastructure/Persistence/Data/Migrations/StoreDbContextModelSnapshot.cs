@@ -198,7 +198,7 @@ namespace Persistence.Data.Migrations
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.Property<string>("FristName")
+                            b1.Property<string>("FirstName")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 

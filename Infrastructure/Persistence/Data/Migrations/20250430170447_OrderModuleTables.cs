@@ -33,7 +33,7 @@ namespace Persistence.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ShippingAddress_FristName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ShippingAddress_FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ShippingAddress_LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ShippingAddress_Street = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ShippingAddress_City = table.Column<string>(type: "nvarchar(max)", nullable: false),
